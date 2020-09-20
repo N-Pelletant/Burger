@@ -4,12 +4,8 @@ import classes from './Modal.module.css';
 
 
 class Modal extends Component {
-  // componentDidUpdate = () => {
-  //   console.log("[Modal] did update")
-  // }
-
-  shouldComponentUpdate = (nextProps, nextState) => {
-    return nextProps.show !== this.props.show
+  shouldComponentUpdate = (nextProps) => {
+    return nextProps.show !== this.props.show || nextProps.children !== this.props.children
   }
 
   render() {
@@ -22,9 +18,7 @@ class Modal extends Component {
         }}>
         {this.props.children}
       </div>
-      <Backdrop
-        show={this.props.show}
-        clicked={this.props.modalClosed} />
+      <Backdrop show={this.props.show} clicked={this.props.clicked} />
     </>;
   }
 }
