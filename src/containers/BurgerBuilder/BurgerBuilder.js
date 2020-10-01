@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import Axios from '../../axios-orders';
+import AxiosInstance from '../../axios-orders';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Burger from '../../components/Burger/Burger';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import WithErrorHandler from '../../hoc/WithErrorHandler/WithErrorHandler';
+
 import Modal from './../../components/UI/Modal/Modal';
 
 const INGREDIENT_PRICES = {
@@ -24,7 +25,7 @@ class BurgerBuilder extends Component {
   }
 
   componentDidMount = () => {
-    Axios
+    AxiosInstance
       .get('/ingredients.json')
       .then(resp => this.setState({ ingredients: resp.data }));
   }
@@ -70,37 +71,16 @@ class BurgerBuilder extends Component {
   }
 
   purchaseContinueHandler = () => {
-    this.setState({ loading: true });
-    // alert("You continue")
-    const command = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: "Nicolas Pelletant",
-        addres: {
-          street: "742 Evergreen terrace",
-          zipcode: 12345,
-          country: "France"
-        },
-        email: "email@test.com",
-      },
-      deliveryMethod: "fast",
-    };
+    const queryParams = [];
+    for(let i in this.state.ingredients) {
+      queryParams.push(encodeURIComponent(i)+ '=' + encodeURIComponent(this.state.ingredients[i]))
+    }
+    queryParams.push('price=' + this.state.totalPrice);
 
-    Axios
-      .post('/orders.json', command)
-      .then(response => {
-        this.setState({
-          loading: false,
-          purchasing: false,
-        });
-      })
-      .catch(error => {
-        this.setState({
-          loading: false,
-          purchasing: false,
-        });
-      });
+    this.props.history.push({
+      pathname: '/checkout',
+      search: '?' + queryParams.join('&'),
+    });
   }
 
   render() {
@@ -148,4 +128,4 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default WithErrorHandler(BurgerBuilder, Axios);
+export default WithErrorHandler(BurgerBuilder, AxiosInstance);
