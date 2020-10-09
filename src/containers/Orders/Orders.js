@@ -1,40 +1,45 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Order from '../../components/Order/Order';
 import AxiosInstance from './../../axios-orders';
-import WithErrorHandler from './../../hoc/WithErrorHandler/WithErrorHandler'
+import WithErrorHandler from './../../hoc/WithErrorHandler/WithErrorHandler';
+import * as actions from './../../store/actions/index';
+import Spinner from './../../components/UI/Spinner/Spinner';
 
 class Orders extends Component {
-  state = {
-    orders: [],
-    loading: true,
-  }
-
-  componentWillMount = () => {
-    AxiosInstance
-      .get('/orders.json')
-      .then(res => {
-        const fetchedOrders = []
-        for (let key in res.data) {
-          fetchedOrders.push({
-            ...res.data[key],
-            id: key,
-          });
-        }
-        this.setState({ loading: false, orders: fetchedOrders })
-      })
-      .catch(() => {
-        this.setState({ loading: false })
-      });
+  componentDidMount = () => {
+    this.props.onFetchOrders();
   }
 
   render() {
-    return this.state.orders.map(elem => (
-      <Order
-        key={elem.id}
-        ingredients={elem.ingredients}
-        price={+elem.price} />
-    ))
+    let orders = <Spinner />
+
+    if (!this.props.loading) {
+      orders = this.props.orders.map(elem => (
+        <Order
+          key={elem.id}
+          ingredients={elem.ingredients}
+          price={+elem.price}
+          delete={() => this.props.onDeleteOrder(elem.id)} />
+      ))
+    }
+
+    return orders;
   }
 }
 
-export default WithErrorHandler(Orders, AxiosInstance);
+const mapStateToProps = state => {
+  return {
+    orders: state.order.orders,
+    loading: state.order.loading,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onFetchOrders: () => dispatch(actions.fetchOrders()),
+    onDeleteOrder: (orderId) => dispatch(actions.deleteOrder(orderId))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WithErrorHandler(Orders, AxiosInstance));

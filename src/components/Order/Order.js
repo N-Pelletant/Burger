@@ -25,6 +25,7 @@ function Order(props) {
     <div className={classes.Order}>
       <p>Ingredients: {ingredientsOutput}</p>
       <p>Price: <strong>{props.price.toFixed(2)} €</strong></p>
+      <button onClick={props.delete}>Delete order</button>
     </div>
   );
 }
