@@ -3,11 +3,6 @@ import Button from './../../UI/Button/Button';
 
 
 function OrderSummary(props) {
-  // componentDidUpdate = () => {
-  //   console.log("[Order summary] did update")
-  // }
-
-
   const ingredientSummary = Object.keys(props.ingredients).map(igKey => (
     <li key={igKey}>
       <span style={{ textTransform: "capitalize" }}>{igKey}</span>: {props.ingredients[igKey]}

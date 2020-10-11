@@ -5,9 +5,9 @@ import Input from '../../UI/Input/Input';
 import Spinner from '../../UI/Spinner/Spinner';
 import AxiosInstance from './../../../axios-orders';
 import WithErrorHandler from './../../../hoc/WithErrorHandler/WithErrorHandler';
-import * as actions from './../../../store/actions/index'
-
-import classes from './ContactData.module.css'
+import * as actions from './../../../store/actions/index';
+import { updateObject, checkValidity } from './../../../shared/utility';
+import classes from './ContactData.module.css';
 
 class ContactData extends Component {
   state = {
@@ -95,46 +95,23 @@ class ContactData extends Component {
       orderData: formData,
       userId: this.props.userId,
     };
-    
+
     this.props.onOrderBurger(order, this.props.token)
   }
 
   inputChangedHandler = (event, inputIdentifier) => {
-    const updatedOrderForm = {
-      ...this.state.orderForm,
-    }
-    const updatedFormElement = {
-      ...updatedOrderForm[inputIdentifier],
-    }
-    updatedFormElement.value = event.target.value;
-    updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-    updatedFormElement.touched = true;
-    updatedOrderForm[inputIdentifier] = updatedFormElement;
-    
-    let formIsValid = true;
-    for (let inputIdentifier in updatedOrderForm) {
-      formIsValid = formIsValid && updatedOrderForm[inputIdentifier].valid;
-    }
+    const updatedFormElement = updateObject(this.state.orderForm[inputIdentifier], {
+      value: event.target.value,
+      valid: checkValidity(event.target.value, this.state.orderForm[inputIdentifier].validation),
+      touched: true,
+    });
+    const updatedOrderForm = updateObject(this.state.orderForm, {
+      [inputIdentifier]: updatedFormElement,
+    });
 
-    this.setState({orderForm: updatedOrderForm, formIsValid});
-  }
+    const formIsValid = Object.values(updatedOrderForm).every(input => input.valid)
 
-  checkValidity = (value, rules = {}) => {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = isValid && value.trim() !== '';
-    }
-
-    if (rules.minLength) {
-      isValid = isValid && value.length >= rules.minLength;
-    }
-
-    if (rules.maxLength) {
-      isValid = isValid && value.length <= rules.maxLength;
-    }
-
-    return isValid;
+    this.setState({ orderForm: updatedOrderForm, formIsValid });
   }
 
   render() {
@@ -178,7 +155,7 @@ const mapStateToProps = state => {
     ings: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
-    token : state.auth.token,
+    token: state.auth.token,
     userId: state.auth.userId,
   }
 }

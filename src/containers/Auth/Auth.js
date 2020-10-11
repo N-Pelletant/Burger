@@ -6,6 +6,7 @@ import Spinner from './../../components/UI/Spinner/Spinner';
 import * as actions from './../../store/actions/index';
 
 import classes from './Auth.module.css';
+import { updateObject, checkValidity } from './../../shared/utility'
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
@@ -44,38 +45,15 @@ class Auth extends Component {
     isSignup: true,
   }
 
-  checkValidity = (value = "", rules) => {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = isValid && value.trim() !== '';
-    }
-
-    if (rules.isEmail) {
-      isValid = isValid && value.match(/\S+@\S+\.\S+/)
-    }
-
-    if (rules.minLength) {
-      isValid = isValid && value.length >= rules.minLength;
-    }
-
-    if (rules.maxLength) {
-      isValid = isValid && value.length <= rules.maxLength;
-    }
-
-    return isValid;
-  }
-
   inputChangedHandler = (event, controlName) => {
-    const updatedControls = {
-      ...this.state.controls,
-      [controlName]: {
-        ...this.state.controls[controlName],
-        value: event.target.value,
-        valid: this.checkValidity(event.target.value, this.state.controls[controlName].validation),
-        touched: true,
-      }
-    }
+    const updatedControl = updateObject(this.state.controls[controlName], {
+      value: event.target.value,
+      valid: checkValidity(event.target.value, this.state.controls[controlName].validation),
+      touched: true,
+    });
+    const updatedControls = updateObject(this.state.controls, {
+      [controlName]: updatedControl
+    });
 
     this.setState({ controls: updatedControls });
   }
@@ -99,13 +77,12 @@ class Auth extends Component {
   }
 
   render() {
-    const formElementArray = [];
-    for (let key in this.state.controls) {
-      formElementArray.push({
+    const formElementArray = Object.entries(this.state.controls).map(([key, value]) => {
+      return {
         id: key,
-        config: this.state.controls[key]
-      });
-    }
+        config: value
+      }
+    });
 
     let form = formElementArray.map(elem => (
       <Input

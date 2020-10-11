@@ -91,6 +91,5 @@ export const deleteOrder = (orderId) => {
     AxiosInstance
       .delete('/orders.json', {params:{id: orderId}})
       .then(() => dispatch(fetchOrders()))
-      .catch((e) => console.log(e))
   }
 }
