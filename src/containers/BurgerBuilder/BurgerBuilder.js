@@ -10,9 +10,7 @@ import WithErrorHandler from '../../hoc/WithErrorHandler/WithErrorHandler';
 import * as actions from './../../store/actions/index';
 import Modal from './../../components/UI/Modal/Modal';
 
-
-
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
     purchasing: false,
   }
