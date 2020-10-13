@@ -7,8 +7,8 @@ import Burger from '../../components/Burger/Burger';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import WithErrorHandler from '../../hoc/WithErrorHandler/WithErrorHandler';
-import * as actions from './../../store/actions/index';
-import Modal from './../../components/UI/Modal/Modal';
+import * as actions from '../../store/actions/index';
+import Modal from '../../components/UI/Modal/Modal';
 
 export class BurgerBuilder extends Component {
   state = {
