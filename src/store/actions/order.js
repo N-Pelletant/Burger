@@ -1,5 +1,4 @@
 import * as actionTypes from './actionTypes';
-import AxiosInstance from './../../axios-orders'
 
 export const purchaseBurgerSuccess = (id, orderData) => {
   return {
@@ -23,16 +22,10 @@ export const purchaseBurgerStart = () => {
 }
 
 export const purchaseBurger = (orderData, token) => {
-  return (dispatch) => {
-    dispatch(purchaseBurgerStart());
-    AxiosInstance
-      .post('/orders.json?auth=' + token, orderData)
-      .then((resp) => {
-        dispatch(purchaseBurgerSuccess(resp.data.name, orderData))
-      })
-      .catch((error) => {
-        dispatch(purchaseBurgerFail(error))
-      });
+  return {
+    type: actionTypes.PURCHASE_BURGER,
+    orderData,
+    token,
   }
 }
 
@@ -63,33 +56,18 @@ export const fetchOrdersFail = (error) => {
 }
 
 export const fetchOrders = (token, userId) => {
-  return dispatch => {
-    dispatch(fetchOrdersStart())
-    const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
-    AxiosInstance
-      .get('/orders.json' + queryParams)
-      .then(res => {
-        const fetchedOrders = []
-
-        for (let key in res.data) {
-          fetchedOrders.push({
-            ...res.data[key],
-            id: key,
-          });
-        }
-
-        dispatch(fetchOrdersSuccess(fetchedOrders))
-      })
-      .catch((e) => {
-        dispatch(fetchOrdersFail(e))
-      })
+  return {
+    type: actionTypes.FETCH_ORDERS,
+    token,
+    userId,
   }
 }
 
-export const deleteOrder = (orderId) => {
-  return dispatch => {
-    AxiosInstance
-      .delete('/orders.json', {params:{id: orderId}})
-      .then(() => dispatch(fetchOrders()))
+export const deleteOrder = (token, orderId, userId) => {
+  return {
+    type: actionTypes.DELETE_ORDER,
+    token,
+    orderId,
+    userId,
   }
 }

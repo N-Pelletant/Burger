@@ -5,7 +5,7 @@ export const updateObject = (oldObject, newProps) => {
   }
 }
 
-export const checkValidity = (value, rules) => {
+export const checkValidity = (value, rules = {}) => {
   let isValid = true;
 
   if (rules.required) {
